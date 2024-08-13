@@ -57,17 +57,14 @@ class Solution {
         }
 
         int maxdist = 0;
+        int count = 0;
+
         for (int dist : DIST) {
             if (dist > maxdist) {
                 maxdist = dist;
-            }
-        }
-
-        // 최장 거리에 해당하는 정점의 수를 계산
-        int count = 0;
-        for (int dist : DIST) {
-            if (dist == maxdist) {
-                count++;
+                count = 1; // 새로운 최대 거리가 발견된 경우 카운트 초기화
+            } else if (dist == maxdist) {
+                count++; // 현재 최대 거리를 가진 정점의 수 증가
             }
         }
 
