@@ -16,26 +16,58 @@ public class Solution {
     }
 
     public int solution(int[][] jobs) {
-        int answer = 0;
         int n = jobs.length;
-        // 두 번째 요소를 기준으로 정렬하는 Comparator 사용
-        Arrays.sort(jobs, new Comparator<int[]>() {
-            @Override
-            public int compare(int[] a, int[] b) {
-                return Integer.compare(a[1], b[1]); // 두 번째 요소를 기준으로 비교
-            }
-        });
-        int cur = 0;
-        for (int i = 0; i < n; i++) {
-            int node = jobs[i][0];
-            int time = jobs[i][1];
-            // 이때까지의 시간 - node + 나의 시간
+        // 작업을 요청 되는 시점 순으로 정렬
+        Arrays.sort(jobs, Comparator.comparingInt(a -> a[0]));
 
-            answer = answer+ cur - node + time;
-            cur = cur + time; // 이때 까지의 시간
+        int totalWaitTime = 0;
+        int currentTime = 0;
+        int jobindex = 0;
+
+        // 우선순위 큐를 사용해서 현재 시점에서 소요 시간이 가장 짧은 작업을 선택한다.
+        Queue<int[]> pq = new PriorityQueue<>((j1, j2) -> j1[1] - j2[1]);
+
+        while (jobindex < n || !pq.isEmpty()){
+            // 현재 시간에서 처리할 수 있는 작업들을 우선 순위 큐에 추가한다.
+            while (jobindex < n && jobs[jobindex][0] <= currentTime){
+                pq.offer(jobs[jobindex]);
+                jobindex++;
+            }
+
+            if (pq.isEmpty()) {
+                // 큐가 비어있다면 다음 작업의 도착 시점까지 시간을 이동합니다.
+                if (jobindex < n) {
+                    currentTime = jobs[jobindex][0];
+                }
+                continue;
+            }
+
+
+            // 큐에서 가장 짧은 작업을 꺼내서 처리한다.
+            int[] job = pq.poll();
+            int startTime = currentTime;
+            int finishTime = startTime + job[1];
+            int waitTime = finishTime - job[0];
+
+            totalWaitTime += waitTime;
+            currentTime =finishTime;
+            printDebugInfo(job, startTime, finishTime, waitTime, currentTime, totalWaitTime, pq);
+
         }
 
-
-        return answer/n;
+        return totalWaitTime/n;
+    }
+    private void printDebugInfo(int[] job, int startTime, int finishTime, int waitTime, int currentTime, int totalWaitTime, Queue<int[]> pq) {
+        System.out.println("Processing Job: [Start: " + job[0] + ", Duration: " + job[1] + "]");
+        System.out.println("Start Time: " + startTime);
+        System.out.println("Finish Time: " + finishTime);
+        System.out.println("Wait Time: " + waitTime);
+        System.out.println("Current Time: " + currentTime);
+        System.out.println("Total Wait Time: " + totalWaitTime);
+        System.out.println("Remaining Jobs in Queue: " + pq.size());
+        for (int[] remainingJob : pq) {
+            System.out.println("  - Job in Queue: [Start: " + remainingJob[0] + ", Duration: " + remainingJob[1] + "]");
+        }
+        System.out.println("---------------------------------------------------");
     }
 }
