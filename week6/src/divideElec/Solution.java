@@ -1,10 +1,10 @@
 package divideElec;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 class Solution {
-    private int vertices; // 정점의 개수
-    private List<List<Integer>> adj; // 인접 리스트
+
 
     public static void main(String[] args) {
         // 주어진 입력
@@ -28,72 +28,46 @@ class Solution {
         System.out.println("Result: " + result);
     }
 
+    int numNode;
+    List<List<Integer>> adj;
+    int answer;
 
     public int solution(int n, int[][] wires) {
-        vertices = n;
-        adj = new ArrayList<>();
+        answer = n;
+        numNode=n;
+        adj= new ArrayList<>();
 
-        // 인접 리스트 초기화
-        for (int i = 0; i < n; i++) {
+        for(int i=0; i<=n; i++){
             adj.add(new ArrayList<>());
         }
-
-        // 인접 리스트 만들기
-        for (int[] e : wires) {
-            int u = e[0] - 1;
-            int v = e[1] - 1;
-            adj.get(u).add(v);
+        for(int[] wire: wires){
+            int u= wire[0], v= wire[1];
             adj.get(v).add(u);
-
+            adj.get(u).add(v);
         }
 
+        boolean[] visited = new boolean[n+1];
+        dfs(1,visited);
 
-        int minDifference = Integer.MAX_VALUE;
-
-        // 모든 엣지를 제거하면서 두 컴포넌트의 크기 차이를 계산
-        for (int[] e : wires) {
-            int u = e[0] - 1;
-            int v = e[1] - 1;
-
-            // 엣지 제거
-            adj.get(u).remove(Integer.valueOf(v));
-            adj.get(v).remove(Integer.valueOf(u));
-
-            // 두 컴포넌트의 크기를 계산
-            int size1 = getComponentSize(u);
-            int size2 = vertices - size1;
-            System.out.println("최솟값 : " + Math.abs(size1 - size2));
-            System.out.println();
-
-            // 최소 차이 업데이트
-            minDifference = Math.min(minDifference, Math.abs(size1 - size2));
-
-            // 엣지 복원
-            adj.get(u).add(v);
-            adj.get(v).add(u);
-        }
-
-        return minDifference;
+        return answer;
     }
 
-    // DFS를 사용하여 컴포넌트의 크기를 계산
-    private int getComponentSize(int start) {
-        boolean[] visited = new boolean[vertices];
-        return dfs(start, visited);
-    }
+    int dfs(int start,boolean[] visited){
+        visited[start] = true;
+        int cnt = 1;
+        System.out.println("start: " + start);
 
-    private int dfs(int node, boolean[] visited) {
-        visited[node] = true;
-        int size = 1;
-        System.out.println("Visited node: " + (node + 1));
-
-
-        for (int neighbor : adj.get(node)) {
-            if (!visited[neighbor]) {
-                size += dfs(neighbor, visited);
+        for(int next: adj.get(start)){
+            System.out.println("next: " + next);
+            System.out.println(Arrays.toString(visited));
+            if(!visited[next]){ // next : 3
+                cnt+=dfs(next, visited);
+                System.out.println("재귀끝!\ncnt: " + cnt);
             }
+            System.out.println("한바뀌 끝!");
         }
-
-        return size;
+        System.out.println("다음 start");
+        answer = Math.min(answer, Math.abs(numNode - cnt*2));
+        return cnt;
     }
 }

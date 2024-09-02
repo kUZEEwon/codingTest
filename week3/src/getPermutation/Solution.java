@@ -23,7 +23,7 @@ class Solution {
         for (int i = 0; i < nums; i++) {
             if (visited[i]) continue;
 
-            curr.add();
+            //curr.add();
             visited[i] = true;
 
             backtrack(r, curr, nums, visited, ans);
