@@ -42,13 +42,20 @@ public class Main {
 
         Kruskal kruskal = new Kruskal(V);
         int minWeight = 0;
+
+        System.out.println("\n=== 크루스칼 알고리즘 수행 ===");
         for (int[] edge : edges) {
-            if(kruskal.union(edge[0], edge[1])){
+            System.out.printf("간선 (%d, %d, %d) 처리: ", edge[0], edge[1], edge[2]);
+            if (kruskal.union(edge[0], edge[1])) {
                 minWeight += edge[2];
+                System.out.println("MST에 포함 (누적 가중치: " + minWeight + ")");
+            } else {
+                System.out.println("사이클 발생, 포함하지 않음");
             }
         }
 
-        System.out.println("answer = " + minWeight);
+        System.out.println("\n=== 최종 결과 ===");
+        System.out.println("MST의 총 가중치: " + minWeight);
 
         br.close();
     }
@@ -94,7 +101,13 @@ class Kruskal {
             parent[rootY] = rootX;
             rank[rootX]++;
         }
+        // 현재 Union-Find 상태 출력
+        printState();
         return true;
     }
 
+    private void printState() {
+        System.out.println("현재 parent 배열: " + Arrays.toString(parent));
+        System.out.println("현재 rank 배열:   " + Arrays.toString(rank));
+    }
 }
