@@ -40,6 +40,11 @@ public class Main {
         // 간선 리스트를 가중치(C) 기준으로 오름차순 정렬
         edges.sort(Comparator.comparingInt(edge -> edge[2]));
 
+        System.out.println("정렬 후 리스트: ");
+        for (int[] edge : edges) {
+            System.out.println(edge[0] + "=>" + edge[1]+", 가중치 : " + edge[2]);
+        }
+
         Kruskal kruskal = new Kruskal(V);
         int minWeight = 0;
 
