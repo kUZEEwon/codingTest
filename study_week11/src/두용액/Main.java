@@ -15,7 +15,7 @@ public class Main {
         for (int i = 0; i < n; i++) {
             nums.add(Integer.parseInt(str[i]));
         }
-        
+
         // 오름 차순 정렬
         // -99 -2 -1 4 98
         Collections.sort(nums);
