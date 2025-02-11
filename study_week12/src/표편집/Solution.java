@@ -1,5 +1,6 @@
 package 표편집;
 // https://blog.encrypted.gg/1001?category=916869
+// https://www.youtube.com/watch?v=Dja2THApFoY
 /*
 * 위 그림에서 파란색으로 칠해진 칸은 현재 선택된 행을 나타냅니다.
 * 단, 한 번에 한 행만 선택할 수 있으며, 표의 범위(0행 ~ 마지막 행)를 벗어날 수 없습니다.
@@ -18,51 +19,81 @@ package 표편집;
 * 커서가 돌아다니면서 중간에 삭제를 하는 형태임 => 연결 리스트가 필요함
 * */
 import java.util.*;
+
 class Solution {
-
-    final int MX = 1200005;
-    int dat[] = new int[MX]; // 각 노드에 저장된 데이터
-    int pre[] = new int[MX]; // 각 노드의 이전 주소
-    int nxt[] = new int[MX]; // 각 노드의 다음 노드 주소
-    int unused =1; // 다음으로 삽입할 데이터 주소
-
-    int[] num2idx = new int[1000005]; // 수 i가 저장된 주소
-
-    // addr번지 뒤에 num을 삽입, num을 삽입한 위치를 반환
-    public int insert(int addr, int num){
-        dat[unused] = num;      // 새로운 데이터 num 저장
-        pre[unused] = addr;      // 새 노드의 이전 노드는 addr
-        nxt[unused] = num2idx[addr];    // 새 노드의 다음 노드는 addr이 가리키던 노드
-        if(nxt[addr] != -1) pre[nxt[addr]] = unused;  // 다음 노드가 존재하면 이전 노드를 새 노드로 갱신
-        nxt[addr] = unused;         // addr의 다음 노드로 새 노드 설정
-        return unused++;
+    // 연결 리스트의 각 노드를 나타내는 클래스
+    class Node {
+        boolean removed; // node 삭제 여부
+        Node prev;
+        Node next;
     }
+
+    Node[] NodeArr = new Node[1000000];
+
     public String solution(int n, int k, String[] cmd) {
-        // n : 표의 행의 개수
-        // k : 처음에 선택된 행의 위치
-
-        String answer = "";
-        dat[0] = nxt[0] = -1;
-
-        for(int i=0; i<n; i++){
-            num2idx[i] = insert(i,i);
+        for (int i = 0; i < n; ++i) {
+            NodeArr[i] = new Node();
         }
-        int cursor = num2idx[k]; // 커서를 원소 k에 둠
-        Stack<Pair> erased = new Stack<Pair>(); // 삭제 되는 원소들에 대해 (이전원소의 값, 현재 원소의 값) 저장
 
-        for(int i=0; i<cmd.length; i++){
-            if(cmd[i].charAt(0) == 'U'){
-               
+        // 각 노드를 연결하여 이중 연결 리스트 생성
+        for (int i = 1; i < n; ++i) {
+            NodeArr[i - 1].next = NodeArr[i];
+            NodeArr[i].prev = NodeArr[i - 1];
+        }
+
+        Node curr = NodeArr[k];
+        Stack<Node> stack = new Stack<>();// 삭제된 노드를 저장할 스택
+
+        for (String str : cmd) {
+            if (str.charAt(0) == 'U') {
+                // 위로 이동
+                int x = Integer.parseInt(str.substring(2));
+                for (int i = 0; i < x && curr.prev != null; ++i) {
+                    // 이전 지점이 NULL인지 확인해야한다.
+                    curr = curr.prev;
+                }
+            } else if (str.charAt(0) == 'D') {
+                // 아래로 이동
+                int x = Integer.parseInt(str.substring(2));
+                for (int i = 0; i < x && curr.next != null; ++i) {
+                    // 다음 지점이 NULL인지 확인해야 한다.
+                    curr = curr.next;
+                }
+            } else if (str.charAt(0) == 'C') {
+                // 삭제 후 다음 지점
+                stack.push(curr);
+                curr.removed = true;
+                Node up = curr.prev;
+                Node down = curr.next;
+
+                if (up != null) up.next = down; // 젤 처음 노드인가?
+                if (down != null) { // 젤 마지막 노드인가?
+                    down.prev = up; // 다음 노드가 있다면 이전 노드를 연결
+                    curr = down; // 다음 노드로 이동
+                } else {
+                    curr = up; // 마지막 노드이면 이전 노드로 이동
+                    if (up != null) up.next = null; // 이전 노드의 끝을 NULL으로 해줌
+                }
+            } else { // Z
+                Node node = stack.pop();
+                node.removed = false;
+                Node up = node.prev; // 복원할 노드의 이전 노드
+                Node down = node.next; // 복원할 노드의 다음 노드
+
+                // 연결 리스트 갱신
+                if (up != null) up.next = node; // 이전 노드가 있다면 복원된 노드 연결
+                if (down != null) down.prev = node; // 다음 노드가 있다면 복원된 노드 연결
             }
         }
-        return answer;
-    }
 
-    class Pair{
-        int x, y;
-        Pair(int x, int y){
-            this.x = x;
-            this.y = y;
+        StringBuilder answer = new StringBuilder();
+        for (int i = 0; i < n; ++i) {
+            if (NodeArr[i].removed) {
+                answer.append('X');
+            } else {
+                answer.append('O');
+            }
         }
+        return answer.toString();
     }
 }
