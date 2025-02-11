@@ -1,5 +1,6 @@
 package 조약돌꺼내기;
 // 1시간
+
 /*
 * input
 첫째 줄에 M (1 ≤ M ≤ 50)이 주어진다.
@@ -7,10 +8,10 @@ package 조약돌꺼내기;
 셋째 줄에는 K가 주어진다. (1 ≤ K ≤ N)
 * */
 import java.io.*;
-import java.math.*;
-import java.util.*;
+
 public class Main {
 
+    // 5C2 = 10
     public static double combi(int n, int r) {
         if (r > n || n < 0 || r < 0) {
             return 0;
@@ -32,7 +33,7 @@ public class Main {
         int m = Integer.parseInt(br.readLine());
         String [] num_tmp = br.readLine().split(" ");
         int[] num_color = new int[m];
-        int n=0;
+        int n = 0;
 
         for (int i = 0; i < m; i++) {
             num_color[i] = Integer.parseInt(num_tmp[i]);
@@ -72,8 +73,6 @@ public class Main {
         bw.write("numCases: " + numCases + "\n");
         bw.write("total_cases: " + totalCases + "\n");
         double answer = numCases/ totalCases;
-
-
 
         // 정답 출력
         bw.write(String.format("%.9f\n", answer));

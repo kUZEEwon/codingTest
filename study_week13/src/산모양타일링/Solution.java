@@ -1,7 +1,4 @@
 package 산모양타일링;
-
-
-
 import java.util.*;
 class Solution {
     public int solution(int n, int[] tops) {
@@ -15,7 +12,8 @@ class Solution {
 
         for(int i = 2; i <= n; i++) {
             a[i] = (a[i-1] + b[i-1]) % 10007;
-            if(tops[i-1] == 1) b[i] = (2*a[i-1] + 3*b[i-1]) % 10007;
+
+            if(tops[i-1] == 1) b[i] = (2 * a[i-1] + 3 * b[i-1]) % 10007;
             else b[i]= (a[i-1] + 2 * b[i-1]) % 10007;
         }
 
